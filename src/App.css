@@ -1,0 +1,25 @@
+@font-face {
+  font-family: 'Aurora';
+  src: url('./font/Aurora.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+h1 {
+  font-family: 'Aurora', sans-serif;
+  text-align: center;
+  color: white;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+summary {
+  color: white;
+  font-family: 'Aurora';
+}
