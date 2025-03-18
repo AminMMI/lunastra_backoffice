@@ -1,31 +1,51 @@
 import React, { useState, useEffect } from "react";
 import { StatsCard } from "./StatsCard";
 import "../style/Card.scss";
-import data from "./data.json";
-
 
 export const StatsResa = () => {
-  const [pourcentage, setPourcentage] = useState(0);
-  const [visiteurs, setVisiteurs] = useState(0);
   const [reservations, setReservations] = useState([]);
 
   useEffect(() => {
-    console.log("Données JSON chargées :", data);
-    setReservations(data.reservations);
-    setVisiteurs(data.stats.countPresence);
-  }, []);
+    // Effectuer la requête à l'API pour récupérer les réservations
+    fetch("http://localhost:8888/lunastra_api/index.php")
+      .then(response => response.json())
+      .then(data => {
+        console.log("Données récupérées de l'API :", data);
+        // Assurer que data contient directement un tableau de réservations
+        setReservations(data);
+      })
+      .catch(error => {
+        console.error("Erreur lors de la récupération des données :", error);
+      });
+  }, []);  // L'effet se lance une seule fois au montage du composant
 
+  // Calculer le nombre total de réservations
+  const nombreDeReservations = reservations.length;
+
+  const totalEntrées = reservations.reduce((total, reservation) => {
+    // On convertit "amount" en nombre avec parseFloat pour éviter les problèmes de type
+    const amount = parseFloat(reservation.amount);
+    if (!isNaN(amount)) {
+      return total + amount;  // Si amount est un nombre valide, on l'ajoute au total
+    }
+    return total;  // Sinon, on garde le total inchangé
+  }, 0);
+  
+  
   return (
     <section className="statCards">
       <StatsCard
         title="Réservations cette semaine"
-        value={reservations.length}
-        type="pourcentage"
-        pourcentage={pourcentage}
+        value={nombreDeReservations}  // Afficher le nombre total de réservations
       />
-      <StatsCard title="Total de réservations" value={reservations.length} />
-      <StatsCard title="Visiteurs cette semaine" value={visiteurs} />
-    
+      <StatsCard
+        title="Total de réservations"
+        value={nombreDeReservations}  // Afficher encore le nombre total de réservations
+      />
+      <StatsCard
+        title="Billets vendus"
+        value={totalEntrées}  // Afficher le total des entrées (sum des "amount")
+      />
     </section>
   );
 };
